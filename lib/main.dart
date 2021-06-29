@@ -15,7 +15,7 @@ Future<void> refreshData() async {
   var memory = await getMemory();
   for(int i=0; i<memory.length; i++) {
     list.add(memory[i]);
-    print(memory[i].toString());1
+    print(memory[i].toString());
   }
 
   // ignore: invalid_use_of_protected_member
@@ -60,6 +60,13 @@ class _MyMemories extends State<MyHomePage> {
         //增加Scaffold后背景为白色，否则为黑
         appBar: new AppBar(
           title: new Text("memory"),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          backgroundColor: Colors.blue,
+          onPressed: (){
+            insertOneMemory("insert title", "insert content");
+          },
         ),
         body: new ListView.separated(
           shrinkWrap: true,
@@ -110,7 +117,7 @@ Future<void> createDb() async {
         print("onCreate");
         // Run the CREATE TABLE statement.
         return db.execute(
-            "CREATE TABLE memories (id INTEGER PRIMARY KEY, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
+            "CREATE TABLE memories (id INTEGER identity(1,1) PRIMARY KEY, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
 
       }, // Set the version to perform database upgrades and downgrades.
       version: 1,
@@ -143,11 +150,11 @@ Future<void> insertMemory(Memory memory) async {
   );
 }
 
-void insertOneMemory() async {
+void insertOneMemory(String title, String content) async {
   print("insertOneMemory");
 
   // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", nextDate:"", isMemory:0);
-  final m = Memory(2, 'the title2', "the content2", "", "", 0);
+  final m = Memory(title, content, "", "", 0);
 
   await insertMemory(m);
 }
@@ -160,25 +167,23 @@ Future<List<Memory>> getMemory() async {
   final List<Map<String, dynamic>> maps = await db.query('memories');
 
   return List.generate(maps.length, (i) {
-    return Memory(maps[i]['id'], maps[i]['title'], maps[i]['content'],
+    return Memory(maps[i]['title'], maps[i]['content'],
         maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
   });
 }
 
 class Memory {
-  final int id;
   final String title;
   final String content;
   final String initDate;
   final String nextDate;
   final int isMemory;
 
-  Memory(this.id, this.title, this.content, this.initDate, this.nextDate,
+  Memory(this.title, this.content, this.initDate, this.nextDate,
       this.isMemory);
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'title': title,
       'content': content,
       'initDate': initDate,
@@ -189,6 +194,6 @@ class Memory {
 
   @override
   String toString() {
-    return "id $id, title $title, content $content, initDate $initDate, nextDate $nextDate, isMemory $isMemory";
+    return "title $title, content $content, initDate $initDate, nextDate $nextDate, isMemory $isMemory";
   }
 }
