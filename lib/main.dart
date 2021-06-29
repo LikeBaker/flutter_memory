@@ -7,16 +7,25 @@ import 'package:path/path.dart'; //不引用没有join方法
 Future<void> main() async {
   runApp(new MyApp());
 
-  createDb();
-  // insertOneMemory();
+  refreshData();
 }
 
+Future<void> refreshData() async {
+  await createDb();
+  var memory = await getMemory();
+  for(int i=0; i<memory.length; i++) {
+    list.add(memory[i]);
+    print(memory[i].toString());1
+  }
+
+  // ignore: invalid_use_of_protected_member
+  memoryState.setState(() { });
+}
+
+// var list = [];
+var list = <Memory>[];
+
 class MyApp extends StatelessWidget {
-  var list = [
-    ["排序", "冒泡排序，快速排序，选择排序，插入排序，希尔排序，堆排序"],
-    ["栈", "栈内容"],
-    ["队列", "队列内容"],
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -26,75 +35,96 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.lightBlue,
           primarySwatch: Colors.lightGreen,
         ),
-        home: new Scaffold(
-          //增加Scaffold后背景为白色，否则为黑
-          appBar: new AppBar(
-            title: new Text("memory"),
-          ),
-          body: new ListView.separated(
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(32.0),
-            itemCount: list.length,
-            //列表项构造器
-            itemBuilder: (BuildContext context, int index) {
-              // return ListTile(title: Text('$index'));
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(list[index][0], style: TextStyle(fontSize: 18)),
-                  Text(list[index][1])
-                ],
-              );
-            },
-            //分割器构造器
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider(color: Colors.blue); //下划线
-            },
-            // itemExtent: 60,//可以控制高度
-          ),
-        ));
+        home: MyHomePage());
   }
+}
+
+var memoryState = _MyMemories();
+class MyHomePage extends StatefulWidget{
+
+
+  @override
+  State<StatefulWidget> createState() {
+    return  memoryState;
+  }
+}
+
+//封装的页面动态类
+class _MyMemories extends State<MyHomePage> {
+
+  @override
+  Widget build(BuildContext context) {
+
+      return Scaffold(
+
+        //增加Scaffold后背景为白色，否则为黑
+        appBar: new AppBar(
+          title: new Text("memory"),
+        ),
+        body: new ListView.separated(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(32.0),
+          itemCount: list.length,
+          //列表项构造器
+          itemBuilder: (BuildContext context, int index) {
+            // return ListTile(title: Text('$index'));
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(list[index].title, style: TextStyle(fontSize: 18)),
+                Text(list[index].content)
+                // Text(index.toString(), style: TextStyle(fontSize: 18)),
+                // Text(index.toString())
+              ],
+            );
+          },
+          //分割器构造器
+          separatorBuilder: (BuildContext context, int index) {
+            return Divider(color: Colors.blue); //下划线
+          }
+          // itemExtent: 60,//可以控制高度
+        ),
+      );
+  }
+
+  // @override
+  // Future<void> setState(VoidCallback fn) async {//todo如何触发更新
+  //   super.setState(fn);
+  //   var memory = await getMemory();
+  //   for(int i=0; i<memory.length; i++) {
+  //     list.add(memory[i]);
+  //     print(memory[i].toString());
+  //   }
+  // }
 }
 
 late final Future<Database> database;
 
 //创建数据库
 Future<void> createDb() async {
-  String databasesPath = await getDatabasesPath();
 
-  // Database Path: /data/user/0/com.package.name/databases
-  // String path = join(databasesPath, 'memory.db');
-  //
-  // Database database = await openDatabase(
-  //   path,
-  //   version: 1,
-  //   onCreate: (Database db, int version) async {
-  //     // 表格创建等初始化操作
-  //     db.execute('CREATE TABLE memories (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');
-  //   },
-  //   onUpgrade: (Database db, int oldVersion, int newVersion) async {
-  //     // 数据库升级
-  //   },
-  // );
+    database = openDatabase(
+      join(await getDatabasesPath(), 'memory.db'), //todo await 必须和async配合使用
 
-  database = openDatabase(
-    join(await getDatabasesPath(), 'memory.db'), //todo await 必须和async配合使用
+      onCreate: (db, version) {
+        print("onCreate");
+        // Run the CREATE TABLE statement.
+        return db.execute(
+            "CREATE TABLE memories (id INTEGER PRIMARY KEY, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
 
-    onCreate: (db, version) {
-      print("onCreate");
-      // Run the CREATE TABLE statement.
-      return db.execute(
-          "CREATE TABLE memories (id INTEGER PRIMARY KEY, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
-
-    }, // Set the version to perform database upgrades and downgrades.
-    version: 1,
-  );
+      }, // Set the version to perform database upgrades and downgrades.
+      version: 1,
+    );
 
   // insertOneMemory();
-  var memory = await getMemory();
-  for(int i=0; i<memory.length; i++) {
-    print("memory " + memory[i].toString());
-  }
+  // var memory = await getMemory();
+  // list = <Memory>[];
+  // for(int i=0; i<memory.length; i++) {
+  //   list.add(memory[i]);
+  //   print(memory[i].toString());
+  // }
+  //
+  // memoryState.setState(() { });
 
 }
 
@@ -117,7 +147,7 @@ void insertOneMemory() async {
   print("insertOneMemory");
 
   // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", nextDate:"", isMemory:0);
-  final m = Memory(0, 'the title', "the content", "", "", 0);
+  final m = Memory(2, 'the title2', "the content2", "", "", 0);
 
   await insertMemory(m);
 }
