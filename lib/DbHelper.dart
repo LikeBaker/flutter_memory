@@ -67,7 +67,7 @@ class DbHelper{
 
     print("here1 $id");
     final List<Map<String, dynamic>> maps = await db.query('memories',
-    where: 'title = ?',whereArgs: ["1"]);
+    where: 'title = ?',whereArgs: [id]);
 
     return List.generate(maps.length, (i) {
       return Memory(maps[i]['title'], maps[i]['content'],
