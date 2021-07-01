@@ -16,7 +16,7 @@ class DbHelper{
       onCreate: (db, version) {
         // Run the CREATE TABLE statement.
         return db.execute(
-            "CREATE TABLE memories (id INTEGER identity(1,1) PRIMARY KEY, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
+            "CREATE TABLE memories (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
 
       }, // Set the version to perform database upgrades and downgrades.
       version: 1,
@@ -24,30 +24,32 @@ class DbHelper{
   }
 
   //插入一条数据
-  Future<void> insertMemory(Memory memory) async {
+  Future<int> insertMemory(Memory memory) async {
     if (database == null) {
       log('database is null');
-      return;
+      return 0;
     }
 
     final Database db = await database;
-    await db.insert(
+    var insert = db.insert(
       'memories',
       memory.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+     return await insert;
+
   }
 
-  void insertOneMemory(String title, String content) async {
+  Future<int> insertOneMemory(String title, String content) async {
     print("insertOneMemory");
 
     // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", nextDate:"", isMemory:0);
     final m = Memory(title, content, "", "", 0);
 
-    await insertMemory(m);
+    return insertMemory(m);
   }
 
-  Future<List<Memory>> getMemory() async {
+  Future<List<Memory>> getMemories() async {
     final Database db = await database;
 
     // Use query for all Memories.
@@ -57,6 +59,20 @@ class DbHelper{
       return Memory(maps[i]['title'], maps[i]['content'],
           maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
     });
+  }
+
+  //根据id获取一条数据
+  Future<List<Memory>> getMemory(int id) async {
+    final Database db = await database;
+
+    print("here1 $id");
+    final List<Map<String, dynamic>> maps = await db.query('memories',
+    where: 'title = ?',whereArgs: ["1"]);
+
+    return List.generate(maps.length, (i) {
+      return Memory(maps[i]['title'], maps[i]['content'],
+          maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
+    });;
   }
 }
 

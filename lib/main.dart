@@ -11,7 +11,7 @@ main() async {
 var dbHelper = DbHelper();
 
 Future<void> refreshData() async {
-  var memory = await dbHelper.getMemory();
+  var memory = await dbHelper.getMemories();
   for (int i = 0; i < memory.length; i++) {
     list.add(memory[i]);
     print(memory[i].toString());
@@ -100,12 +100,27 @@ class _MyMemories extends State<MyHomePage> {
                         ]),
                     actions: [
                       TextButton(
-                          onPressed: () async => {
-                                dbHelper.insertOneMemory(
-                                    inputTitle, inputContent),
-                                memoryState.setState(() {refreshData();}),
-                                Navigator.pop(context)
-                              },
+                          onPressed: () {
+                            var insertOneMemory = dbHelper.insertOneMemory(inputTitle, inputContent);
+                                insertOneMemory.then((value) {
+                                  var memory = dbHelper.getMemory(value);
+                                  return {
+                                    print("插入成功"),
+                                    print("memory $memory"),
+                                    memory.then((value) => {
+                                      memoryState.setState(() {
+                                        print("set State $value");
+                                        list.add(value[0]);
+                                      }),
+                                      Navigator.pop(context)
+                                    })
+                                };
+                                });
+                                //     .catchError((){
+                                //   print("插入失败");
+                                // }
+                                // );
+                          },
                           child: Text('确定')),
                       TextButton(
                           onPressed: () => {
