@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_memory/DbHelper.dart';
 
-main() {
+main() async {
   runApp(new MyApp());
 
+  await dbHelper.createDb();
   refreshData();
 }
 
 var dbHelper = DbHelper();
 
 Future<void> refreshData() async {
-  await dbHelper.createDb();
   var memory = await dbHelper.getMemory();
   for (int i = 0; i < memory.length; i++) {
     list.add(memory[i]);
@@ -103,7 +103,7 @@ class _MyMemories extends State<MyHomePage> {
                           onPressed: () async => {
                                 dbHelper.insertOneMemory(
                                     inputTitle, inputContent),
-                                memoryState.setState(() {}),
+                                memoryState.setState(() {refreshData();}),
                                 Navigator.pop(context)
                               },
                           child: Text('确定')),
