@@ -149,21 +149,23 @@ class _MyMemories extends State<MyHomePage> {
                       title: Text("是否要修改"),
                       actions: [TextButton(
                           onPressed: () {
-                            var updateMemory = dbHelper.updateMemory(1,
-                                "content", "1.4");
-                            updateMemory.then((value) {
-                              var memory = dbHelper.getMemory(1);
-                              return {
-                              print("update result $value"),
-                              memory.then((value) => {
-                                memoryState.setState(() {
-                                  list[index] = value[0];
-                                }),
-                                Navigator.pop(context)
-                              })
-                            };
-                            });
-                            print("update db");
+                            var id = list[index].id;
+                            dbHelper.delMemory(id);
+                            // var updateMemory = dbHelper.updateMemory(id,
+                            //     "content", "1.4");
+                            // updateMemory.then((value) {
+                            //   var memory = dbHelper.getMemory(1);
+                            //   return {
+                            //   print("update result $value"),
+                            //   memory.then((value) => {
+                            //     memoryState.setState(() {
+                            //       list[index] = value[0];
+                            //     }),
+                            //     Navigator.pop(context)
+                            //   })
+                            // };
+                            // });
+                            // print("update db");
                             //todo 更新成功后刷新页面
                           },
                           child: Text('确定')),],

@@ -75,10 +75,24 @@ class DbHelper{
     });
   }
 
-  Future<int> updateMemory(int id, String field, String value) async{
+  ///根据id修改记录，通过参数只当修改的字段和值
+  Future<int> updateMemoryFlexible(int id, String field, String value) async{
     final Database db = await database;
     // db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');
     return db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');//使用一个参数的方式也可以更新
+  }
+
+  ///根据id，更新title和content
+  Future<int> updateMemory(int id, String title, String content) async{
+    final Database db = await database;
+    // db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');
+    return db.rawUpdate('UPDATE memories SET title = $title, content = $content WHERE id = $id');//使用一个参数的方式也可以更新
+  }
+
+  void delMemory(int id) async{
+    final Database db = await database;
+    Future<int> future = db.rawDelete('DELETE FROM memories WHERE id = $id');
+    future.then((value) => print("delete $value"));
   }
 }
 
