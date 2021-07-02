@@ -44,7 +44,7 @@ class DbHelper{
   Future<int> insertOneMemory(String title, String content) async {
 
     // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", nextDate:"", isMemory:0);
-    final m = Memory(title, content, "", "", 0);
+    final m = Memory.generate(title, content, "", "", 0);
 
     return insertMemory(m);
   }
@@ -57,7 +57,7 @@ class DbHelper{
     final List<Map<String, dynamic>> maps = await db.query('memories');
 
     return List.generate(maps.length, (i) {
-      return Memory(maps[i]['title'], maps[i]['content'],
+      return Memory(maps[i]['id'], maps[i]['title'], maps[i]['content'],
           maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
     });
   }
@@ -70,7 +70,7 @@ class DbHelper{
     where: 'id = ?',whereArgs: [id]);
 
     return List.generate(maps.length, (i) {
-      return Memory(maps[i]['title'], maps[i]['content'],
+      return Memory(maps[i]['id'], maps[i]['title'], maps[i]['content'],
           maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
     });
   }
@@ -83,14 +83,20 @@ class DbHelper{
 }
 
 class Memory {
+  int id = -1;
   final String title;
   final String content;
   final String initDate;
   final String nextDate;
   final int isMemory;
 
-  Memory(this.title, this.content, this.initDate, this.nextDate,
+  Memory(this.id, this.title, this.content, this.initDate, this.nextDate,
       this.isMemory);
+
+  Memory.generate(this.title, this.content, this.initDate, this.nextDate,
+      this.isMemory);
+
+
 
   Map<String, dynamic> toMap() {
     return {
@@ -104,6 +110,6 @@ class Memory {
 
   @override
   String toString() {
-    return "title $title, content $content, initDate $initDate, nextDate $nextDate, isMemory $isMemory";
+    return "id $id, title $title, content $content, initDate $initDate, nextDate $nextDate, isMemory $isMemory";
   }
 }
