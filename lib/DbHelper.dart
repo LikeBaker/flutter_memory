@@ -23,7 +23,7 @@ class DbHelper{
     );
   }
 
-  //插入一条数据
+  /// 插入一条 [Memory]
   Future<int> insertMemory(Memory memory) async {
     if (database == null) {
       log('database is null');
@@ -40,8 +40,8 @@ class DbHelper{
 
   }
 
+  /// 插入一条数据，根据title和content生成[Memory]并写入数据库
   Future<int> insertOneMemory(String title, String content) async {
-    print("insertOneMemory");
 
     // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", nextDate:"", isMemory:0);
     final m = Memory(title, content, "", "", 0);
@@ -49,6 +49,7 @@ class DbHelper{
     return insertMemory(m);
   }
 
+  ///获取所有的[Memory]记录
   Future<List<Memory>> getMemories() async {
     final Database db = await database;
 
@@ -61,18 +62,23 @@ class DbHelper{
     });
   }
 
-  //根据id获取一条数据
+  ///根据id获取一条[Memory]数据
   Future<List<Memory>> getMemory(int id) async {
     final Database db = await database;
 
-    print("here1 $id");
     final List<Map<String, dynamic>> maps = await db.query('memories',
-    where: 'title = ?',whereArgs: [id]);
+    where: 'id = ?',whereArgs: [id]);
 
     return List.generate(maps.length, (i) {
       return Memory(maps[i]['title'], maps[i]['content'],
           maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
-    });;
+    });
+  }
+
+  Future<int> updateMemory(int id, String field, String value) async{
+    final Database db = await database;
+    // db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');
+    return db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');//使用一个参数的方式也可以更新
   }
 }
 

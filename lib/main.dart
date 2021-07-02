@@ -101,25 +101,26 @@ class _MyMemories extends State<MyHomePage> {
                     actions: [
                       TextButton(
                           onPressed: () {
-                            var insertOneMemory = dbHelper.insertOneMemory(inputTitle, inputContent);
-                                insertOneMemory.then((value) {
-                                  var memory = dbHelper.getMemory(value);
-                                  return {
-                                    print("插入成功"),
-                                    print("memory $memory"),
-                                    memory.then((value) => {
+                            var insertOneMemory = dbHelper.insertOneMemory(
+                                inputTitle, inputContent);
+                            insertOneMemory.then((value) {
+                              var memory = dbHelper.getMemory(value);
+                              return {
+                                print("插入成功"),
+                                print("memory $memory"),
+                                memory.then((value) => {
                                       memoryState.setState(() {
                                         print("set State $value");
                                         list.add(value[0]);
                                       }),
                                       Navigator.pop(context)
                                     })
-                                };
-                                });
-                                //     .catchError((){
-                                //   print("插入失败");
-                                // }
-                                // );
+                              };
+                            });
+                            //     .catchError((){
+                            //   print("插入失败");
+                            // }
+                            // );
                           },
                           child: Text('确定')),
                       TextButton(
@@ -140,14 +141,44 @@ class _MyMemories extends State<MyHomePage> {
             //列表项构造器
             itemBuilder: (BuildContext context, int index) {
               // return ListTile(title: Text('$index'));
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(list[index].title, style: TextStyle(fontSize: 18)),
-                  Text(list[index].content)
-                  // Text(index.toString(), style: TextStyle(fontSize: 18)),
-                  // Text(index.toString())
-                ],
+              return new GestureDetector(
+                onTap: (){
+                  print("click item $index");
+                  showDialog(context: context, builder: (context){
+                    return AlertDialog(
+                      title: Text("是否要修改"),
+                      actions: [TextButton(
+                          onPressed: () {
+                            var updateMemory = dbHelper.updateMemory(1,
+                                "content", "1.4");
+                            updateMemory.then((value) {
+                              var memory = dbHelper.getMemory(1);
+                              return {
+                              print("update result $value"),
+                              memory.then((value) => {
+                                memoryState.setState(() {
+                                  list[index] = value[0];
+                                }),
+                                Navigator.pop(context)
+                              })
+                            };
+                            });
+                            print("update db");
+                            //todo 更新成功后刷新页面
+                          },
+                          child: Text('确定')),],
+                    );
+                  });
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(list[index].title, style: TextStyle(fontSize: 18)),
+                    Text(list[index].content)
+                    // Text(index.toString(), style: TextStyle(fontSize: 18)),
+                    // Text(index.toString())
+                  ],
+                )
               );
             },
             //分割器构造器
