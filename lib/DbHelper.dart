@@ -16,7 +16,7 @@ class DbHelper{
       onCreate: (db, version) {
         // Run the CREATE TABLE statement.
         return db.execute(
-            "CREATE TABLE memories (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, initDate TEXT, nextDate TEXT, isMemory INTEGER)");
+            "CREATE TABLE memories (id INTEGER PRIMARY KEY AUTOINCREMENT, title Text, content Text, initDate Text, nextDate Text, isMemory INTEGER)");
 
       }, // Set the version to perform database upgrades and downgrades.
       version: 1,
@@ -86,7 +86,7 @@ class DbHelper{
   Future<int> updateMemory(int id, String title, String content) async{
     final Database db = await database;
     // db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');
-    return db.rawUpdate('UPDATE memories SET title = $title, content = $content WHERE id = $id');//使用一个参数的方式也可以更新
+    return db.rawUpdate('UPDATE memories SET title = ?, content = ? WHERE id = ?', [title, content, id]);//使用一个参数的方式也可以更新
   }
 
   void delMemory(int id) async{

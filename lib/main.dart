@@ -66,7 +66,7 @@ class _MyMemories extends State<MyHomePage> {
 
     return Scaffold(
 
-      //增加Scaffold后背景为白色，否则为黑
+        //增加Scaffold后背景为白色，否则为黑
         appBar: new AppBar(
           title: new Text("memory"),
         ),
@@ -74,7 +74,6 @@ class _MyMemories extends State<MyHomePage> {
           child: Icon(Icons.add),
           backgroundColor: Colors.blue,
           onPressed: () {
-            print('onPressed');
             // dbHelper.insertOneMemory("insert title", "insert content");
             showDialog(
                 context: context,
@@ -108,14 +107,13 @@ class _MyMemories extends State<MyHomePage> {
                               return {
                                 print("插入成功"),
                                 print("memory $memory"),
-                                memory.then((value) =>
-                                {
-                                  memoryState.setState(() {
-                                    print("set State $value");
-                                    list.add(value[0]);
-                                  }),
-                                  Navigator.pop(context)
-                                })
+                                memory.then((value) => {
+                                      memoryState.setState(() {
+                                        print("set State $value");
+                                        list.add(value[0]);
+                                      }),
+                                      Navigator.pop(context)
+                                    })
                               };
                             });
                             //     .catchError((){
@@ -125,11 +123,10 @@ class _MyMemories extends State<MyHomePage> {
                           },
                           child: Text('确定')),
                       TextButton(
-                          onPressed: () =>
-                          {
-                            Navigator.pop(context),
-                            memoryState.setState(() {})
-                          },
+                          onPressed: () => {
+                                Navigator.pop(context),
+                                memoryState.setState(() {})
+                              },
                           child: Text('取消'))
                     ],
                   );
@@ -144,7 +141,8 @@ class _MyMemories extends State<MyHomePage> {
             itemBuilder: (BuildContext context, int index) {
               // return ListTile(title: Text('$index'));
               return new GestureDetector(
-                  behavior: HitTestBehavior.opaque,//点击范围约束，这样点击范围就是整个ListView的item，同时也不用设置背景
+                  behavior: HitTestBehavior.opaque,
+                  //点击范围约束，这样点击范围就是整个ListView的item，同时也不用设置背景
                   onTap: () {
                     print("click item $index, todo:跟新记忆次数");
                     // showDialog(context: context, builder: (context) {
@@ -178,6 +176,87 @@ class _MyMemories extends State<MyHomePage> {
                     //   );
                     // });
                   },
+                  onLongPress: () {
+                    //修改item
+                    print("long press item $index");
+                    int id = list[index].id;
+                    String title = list[index].title;
+                    String content = list[index].content;
+
+                    TextEditingController inputEditTitleController =
+                        TextEditingController();
+                    TextEditingController inputEditContentController =
+                        TextEditingController();
+
+                    inputEditTitleController.addListener(() {
+                      title = inputEditTitleController.text;
+                    });
+
+                    inputEditContentController.addListener(() {
+                      content = inputEditContentController.text;
+                    });
+
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("修改 Memory"),
+                            content: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(
+                                      controller: inputEditTitleController,
+                                      decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.all(10.0),
+                                          labelText: title,
+                                          prefixIcon: Icon(Icons.person))),
+                                  TextField(
+                                      controller: inputEditContentController,
+                                      decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.all(10.0),
+                                          labelText: content,
+                                          prefixIcon: Icon(Icons.person))),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    print("here:$id $title $content");
+                                    //更新
+                                    if (title.length == 0){
+                                      title = "\'\'";
+                                    }
+
+                                    if(content.length == 0) {
+                                      content = "\'\'";
+                                    }
+
+                                    var updateMemory = dbHelper.updateMemory(
+                                        id, title, "1.4");
+                                    updateMemory.then((value) {
+                                      var memory = dbHelper.getMemory(1);
+                                      return {
+                                        print("update result $value"),
+                                        memory.then((value) => {
+                                              memoryState.setState(() {
+                                                // 更新成功后刷新页面
+                                                if (value.length > 0) {
+                                                  list[index] = value[0];
+                                                }
+                                              }),
+                                              Navigator.pop(context)
+                                            })
+                                      };
+                                    });
+                                    print("update db");
+                                  },
+                                  child: Text('确定')),
+                            ],
+                          );
+                        });
+                  },
                   child: Container(
                       width: double.maxFinite,
                       // color: Colors.white,//限定最大宽度，且不设备背景，点击事件范围仅仅是有文字的区域
@@ -185,21 +264,21 @@ class _MyMemories extends State<MyHomePage> {
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(list[index].title, style: TextStyle(fontSize: 18, backgroundColor: Colors.blue)),
+                          Text(list[index].title,
+                              style: TextStyle(
+                                  fontSize: 18, backgroundColor: Colors.blue)),
                           Text(list[index].content)
                           // Text(index.toString(), style: TextStyle(fontSize: 18)),
                           // Text(index.toString())
                         ],
-                      )
-                  )
-              );
+                      )));
             },
             //分割器构造器
             separatorBuilder: (BuildContext context, int index) {
               return Divider(color: Colors.blue); //下划线
             }
-          // itemExtent: 60,//可以控制高度
-        ));
+            // itemExtent: 60,//可以控制高度
+            ));
   }
 
 // @override
