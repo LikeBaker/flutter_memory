@@ -66,7 +66,7 @@ class _MyMemories extends State<MyHomePage> {
 
     return Scaffold(
 
-        //增加Scaffold后背景为白色，否则为黑
+      //增加Scaffold后背景为白色，否则为黑
         appBar: new AppBar(
           title: new Text("memory"),
         ),
@@ -108,13 +108,14 @@ class _MyMemories extends State<MyHomePage> {
                               return {
                                 print("插入成功"),
                                 print("memory $memory"),
-                                memory.then((value) => {
-                                      memoryState.setState(() {
-                                        print("set State $value");
-                                        list.add(value[0]);
-                                      }),
-                                      Navigator.pop(context)
-                                    })
+                                memory.then((value) =>
+                                {
+                                  memoryState.setState(() {
+                                    print("set State $value");
+                                    list.add(value[0]);
+                                  }),
+                                  Navigator.pop(context)
+                                })
                               };
                             });
                             //     .catchError((){
@@ -124,10 +125,11 @@ class _MyMemories extends State<MyHomePage> {
                           },
                           child: Text('确定')),
                       TextButton(
-                          onPressed: () => {
-                                Navigator.pop(context),
-                                memoryState.setState(() {})
-                              },
+                          onPressed: () =>
+                          {
+                            Navigator.pop(context),
+                            memoryState.setState(() {})
+                          },
                           child: Text('取消'))
                     ],
                   );
@@ -142,53 +144,62 @@ class _MyMemories extends State<MyHomePage> {
             itemBuilder: (BuildContext context, int index) {
               // return ListTile(title: Text('$index'));
               return new GestureDetector(
-                onTap: (){
-                  print("click item $index");
-                  showDialog(context: context, builder: (context){
-                    return AlertDialog(
-                      title: Text("是否要修改"),
-                      actions: [TextButton(
-                          onPressed: () {
-                            var id = list[index].id;
-                            dbHelper.delMemory(id);
-                            // var updateMemory = dbHelper.updateMemory(id,
-                            //     "content", "1.4");
-                            // updateMemory.then((value) {
-                            //   var memory = dbHelper.getMemory(1);
-                            //   return {
-                            //   print("update result $value"),
-                            //   memory.then((value) => {
-                            //     memoryState.setState(() {
-                            //       list[index] = value[0];
-                            //     }),
-                            //     Navigator.pop(context)
-                            //   })
-                            // };
-                            // });
-                            // print("update db");
-                            //todo 更新成功后刷新页面
-                          },
-                          child: Text('确定')),],
-                    );
-                  });
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(list[index].title, style: TextStyle(fontSize: 18)),
-                    Text(list[index].content)
-                    // Text(index.toString(), style: TextStyle(fontSize: 18)),
-                    // Text(index.toString())
-                  ],
-                )
+                  behavior: HitTestBehavior.opaque,//点击范围约束，这样点击范围就是整个ListView的item，同时也不用设置背景
+                  onTap: () {
+                    print("click item $index, todo:跟新记忆次数");
+                    // showDialog(context: context, builder: (context) {
+                    //   return AlertDialog(
+                    //     title: Text("是否要修改"),
+                    //     actions: [TextButton(
+                    //         onPressed: () {
+                    //           var id = list[index].id;
+                    //           //删除
+                    //           // dbHelper.delMemory(id);
+                    //           //更新
+                    //           // var updateMemory = dbHelper.updateMemory(id,
+                    //           //     "content", "1.4");
+                    //           // updateMemory.then((value) {
+                    //           //   var memory = dbHelper.getMemory(1);
+                    //           //   return {
+                    //           //   print("update result $value"),
+                    //           //   memory.then((value) => {
+                    //           //     memoryState.setState(() {
+                    //           // 更新成功后刷新页面
+                    //           //       list[index] = value[0];
+                    //           //     }),
+                    //           //     Navigator.pop(context)
+                    //           //   })
+                    //           // };
+                    //           // });
+                    //           // print("update db");
+                    //         },
+                    //         child: Text('确定')),
+                    //     ],
+                    //   );
+                    // });
+                  },
+                  child: Container(
+                      width: double.maxFinite,
+                      // color: Colors.white,//限定最大宽度，且不设备背景，点击事件范围仅仅是有文字的区域
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(list[index].title, style: TextStyle(fontSize: 18, backgroundColor: Colors.blue)),
+                          Text(list[index].content)
+                          // Text(index.toString(), style: TextStyle(fontSize: 18)),
+                          // Text(index.toString())
+                        ],
+                      )
+                  )
               );
             },
             //分割器构造器
             separatorBuilder: (BuildContext context, int index) {
               return Divider(color: Colors.blue); //下划线
             }
-            // itemExtent: 60,//可以控制高度
-            ));
+          // itemExtent: 60,//可以控制高度
+        ));
   }
 
 // @override
