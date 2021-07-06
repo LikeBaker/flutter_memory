@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_memory/DbHelper.dart';
+import 'package:flutter_memory/MemoryHandle.dart';
 
 main() async {
   runApp(new MyApp());
@@ -13,8 +14,11 @@ var dbHelper = DbHelper();
 Future<void> refreshData() async {
   var memory = await dbHelper.getMemories();
   for (int i = 0; i < memory.length; i++) {
-    list.add(memory[i]);
-    print(memory[i].toString());
+    var m = memory[i];
+    print(m.toString());
+    if(isShow(m)){
+      list.add(m);
+    }
   }
 
   // ignore: invalid_use_of_protected_member
@@ -223,22 +227,21 @@ class _MyMemories extends State<MyHomePage> {
                             actions: [
                               TextButton(
                                   onPressed: () {
-                                    print("here:$id $title $content");
                                     //更新
-                                    if (title.length == 0){
+                                    if (title.length == 0) {
                                       title = "\'\'";
                                     }
 
-                                    if(content.length == 0) {
+                                    if (content.length == 0) {
                                       content = "\'\'";
                                     }
 
                                     var updateMemory = dbHelper.updateMemory(
-                                        id, title, "1.4");
+                                        id, title, content);
                                     updateMemory.then((value) {
                                       var memory = dbHelper.getMemory(1);
                                       return {
-                                        print("update result $value"),
+                                        print("update result $value"), //1为更新成功
                                         memory.then((value) => {
                                               memoryState.setState(() {
                                                 // 更新成功后刷新页面
@@ -265,8 +268,7 @@ class _MyMemories extends State<MyHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(list[index].title,
-                              style: TextStyle(
-                                  fontSize: 18, backgroundColor: Colors.blue)),
+                              style: TextStyle(fontSize: 18)),
                           Text(list[index].content)
                           // Text(index.toString(), style: TextStyle(fontSize: 18)),
                           // Text(index.toString())

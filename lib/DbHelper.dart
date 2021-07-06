@@ -16,7 +16,7 @@ class DbHelper{
       onCreate: (db, version) {
         // Run the CREATE TABLE statement.
         return db.execute(
-            "CREATE TABLE memories (id INTEGER PRIMARY KEY AUTOINCREMENT, title Text, content Text, initDate Text, nextDate Text, isMemory INTEGER)");
+            "CREATE TABLE memories (id INTEGER PRIMARY KEY AUTOINCREMENT, title Text, content Text, initDate INTEGER, memoryCount INTEGER, isMemory INTEGER)");
 
       }, // Set the version to perform database upgrades and downgrades.
       version: 1,
@@ -43,8 +43,8 @@ class DbHelper{
   /// 插入一条数据，根据title和content生成[Memory]并写入数据库
   Future<int> insertOneMemory(String title, String content) async {
 
-    // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", nextDate:"", isMemory:0);
-    final m = Memory.generate(title, content, "", "", 0);
+    // final b1 = Memory(id: 0, title: 'the title', content: "the content", initDate: "", memoryCount:"", isMemory:0);
+    final m = Memory.generate(title, content, new DateTime.now().millisecondsSinceEpoch, 0, 0);
 
     return insertMemory(m);
   }
@@ -58,7 +58,7 @@ class DbHelper{
 
     return List.generate(maps.length, (i) {
       return Memory(maps[i]['id'], maps[i]['title'], maps[i]['content'],
-          maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
+          maps[i]['initDate'], maps[i]['memoryCount'], maps[i]['isMemory']);
     });
   }
 
@@ -71,7 +71,7 @@ class DbHelper{
 
     return List.generate(maps.length, (i) {
       return Memory(maps[i]['id'], maps[i]['title'], maps[i]['content'],
-          maps[i]['initDate'], maps[i]['nextDate'], maps[i]['isMemory']);
+          maps[i]['initDate'], maps[i]['memoryCount'], maps[i]['isMemory']);
     });
   }
 
@@ -100,14 +100,14 @@ class Memory {
   int id = -1;
   final String title;
   final String content;
-  final String initDate;
-  final String nextDate;
+  final int initDate;
+  final int memoryCount;
   final int isMemory;
 
-  Memory(this.id, this.title, this.content, this.initDate, this.nextDate,
+  Memory(this.id, this.title, this.content, this.initDate, this.memoryCount,
       this.isMemory);
 
-  Memory.generate(this.title, this.content, this.initDate, this.nextDate,
+  Memory.generate(this.title, this.content, this.initDate, this.memoryCount,
       this.isMemory);
 
 
@@ -117,13 +117,13 @@ class Memory {
       'title': title,
       'content': content,
       'initDate': initDate,
-      'nextDate': nextDate,
+      'memoryCount': memoryCount,
       'isMemory': isMemory
     };
   }
 
   @override
   String toString() {
-    return "id $id, title $title, content $content, initDate $initDate, nextDate $nextDate, isMemory $isMemory";
+    return "id $id, title $title, content $content, initDate $initDate, memoryCount $memoryCount, isMemory $isMemory";
   }
 }
