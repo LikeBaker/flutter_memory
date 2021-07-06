@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_memory/DbHelper.dart';
 import 'package:flutter_memory/MemoryHandle.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 main() async {
   runApp(new MyApp());
@@ -16,7 +17,7 @@ Future<void> refreshData() async {
   for (int i = 0; i < memory.length; i++) {
     var m = memory[i];
     print(m.toString());
-    if(isShow(m)){
+    if (isShow(m)) {
       list.add(m);
     }
   }
@@ -70,7 +71,7 @@ class _MyMemories extends State<MyHomePage> {
 
     return Scaffold(
 
-        //增加Scaffold后背景为白色，否则为黑
+      //增加Scaffold后背景为白色，否则为黑
         appBar: new AppBar(
           title: new Text("memory"),
         ),
@@ -111,14 +112,23 @@ class _MyMemories extends State<MyHomePage> {
                               return {
                                 print("插入成功"),
                                 print("memory $memory"),
-                                memory.then((value) => {
-                                      memoryState.setState(() {
-                                        print("set State $value");
-                                        list.add(value[0]);
-                                      }),
-                                      Navigator.pop(context)
-                                    })
-                              };
+                                memory.then((value) =>
+                                {
+
+                                  Fluttertoast.showToast(
+                                      msg: "已加入记忆栈",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  ),
+                                  // memoryState.setState(() {
+                                  //   print("set State $value");
+                                  //   list.add(value[0]);
+                                  // }),
+                                  Navigator.pop(context)
+                                })};
                             });
                             //     .catchError((){
                             //   print("插入失败");
@@ -127,10 +137,11 @@ class _MyMemories extends State<MyHomePage> {
                           },
                           child: Text('确定')),
                       TextButton(
-                          onPressed: () => {
-                                Navigator.pop(context),
-                                memoryState.setState(() {})
-                              },
+                          onPressed: () =>
+                          {
+                            Navigator.pop(context),
+                            memoryState.setState(() {})
+                          },
                           child: Text('取消'))
                     ],
                   );
@@ -188,9 +199,9 @@ class _MyMemories extends State<MyHomePage> {
                     String content = list[index].content;
 
                     TextEditingController inputEditTitleController =
-                        TextEditingController();
+                    TextEditingController();
                     TextEditingController inputEditContentController =
-                        TextEditingController();
+                    TextEditingController();
 
                     inputEditTitleController.addListener(() {
                       title = inputEditTitleController.text;
@@ -242,15 +253,16 @@ class _MyMemories extends State<MyHomePage> {
                                       var memory = dbHelper.getMemory(1);
                                       return {
                                         print("update result $value"), //1为更新成功
-                                        memory.then((value) => {
-                                              memoryState.setState(() {
-                                                // 更新成功后刷新页面
-                                                if (value.length > 0) {
-                                                  list[index] = value[0];
-                                                }
-                                              }),
-                                              Navigator.pop(context)
-                                            })
+                                        memory.then((value) =>
+                                        {
+                                          memoryState.setState(() {
+                                            // 更新成功后刷新页面
+                                            if (value.length > 0) {
+                                              list[index] = value[0];
+                                            }
+                                          }),
+                                          Navigator.pop(context)
+                                        })
                                       };
                                     });
                                     print("update db");
@@ -279,8 +291,8 @@ class _MyMemories extends State<MyHomePage> {
             separatorBuilder: (BuildContext context, int index) {
               return Divider(color: Colors.blue); //下划线
             }
-            // itemExtent: 60,//可以控制高度
-            ));
+          // itemExtent: 60,//可以控制高度
+        ));
   }
 
 // @override
