@@ -14,6 +14,7 @@ bool isShow(Memory m){
 
   var timeDiff = currentTimeStamp - date;
   var quotient = timeDiff / DAYTIME;
+  print("距离天数 $quotient");
   if(quotient >= 1 && quotient < 2 && count == 0) {
     print("here1");
     return true;

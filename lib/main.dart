@@ -17,9 +17,10 @@ Future<void> refreshData() async {
   for (int i = 0; i < memory.length; i++) {
     var m = memory[i];
     print(m.toString());
-    if (isShow(m)) {
-      list.add(m);
-    }
+    // if (isShow(m)) {
+    //   list.add(m);
+    // }
+    list.add(m);
   }
 
   // ignore: invalid_use_of_protected_member
@@ -159,7 +160,21 @@ class _MyMemories extends State<MyHomePage> {
                   behavior: HitTestBehavior.opaque,
                   //点击范围约束，这样点击范围就是整个ListView的item，同时也不用设置背景
                   onTap: () {
-                    print("click item $index, todo:跟新记忆次数");
+                    print("click item $index");
+
+                    var id = list[index].id;
+                    var count = list[index].memoryCount;
+                    print("increase $id $count");
+                    var update = dbHelper.memoryCountIncrease(id, count);
+                    update.then((value) => {
+                      // print("update result $value"),
+                      if(value == 1) {
+                        memoryState.setState(() {
+                          list.removeAt(index);
+                        })
+                      }
+                    });
+                    
                     // showDialog(context: context, builder: (context) {
                     //   return AlertDialog(
                     //     title: Text("是否要修改"),

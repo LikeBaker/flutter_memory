@@ -94,6 +94,12 @@ class DbHelper{
     Future<int> future = db.rawDelete('DELETE FROM memories WHERE id = $id');
     future.then((value) => print("delete $value"));
   }
+
+  Future<int> memoryCountIncrease(int id, int lastCount) async{
+    final Database db = await database;
+    // db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');
+    return db.rawUpdate('UPDATE memories SET memoryCount = ? WHERE id = ?', [++lastCount, id]);
+  }
 }
 
 class Memory {
