@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_memory/DbHelper.dart';
-import 'package:flutter_memory/MemoryHandle.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 main() async {
   runApp(new MyApp());
@@ -36,8 +36,8 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
         title: 'memory curve',
         theme: new ThemeData(
-          primaryColor: Colors.lightBlue,
-          primarySwatch: Colors.lightGreen,
+          primaryColor: Colors.lightBlue
+          // primarySwatch: Colors.lightGreen,
         ),
         home: MyHomePage());
   }
@@ -70,92 +70,19 @@ class _MyMemories extends State<MyHomePage> {
       inputContent = inputContentController.text;
     });
 
-    return Scaffold(
-
-      //增加Scaffold后背景为白色，否则为黑
-        appBar: new AppBar(
-          title: new Text("memory"),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          backgroundColor: Colors.blue,
-          onPressed: () {
-            // dbHelper.insertOneMemory("insert title", "insert content");
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('add a memory'),
-                    content: Column(mainAxisSize: MainAxisSize.min, //自适应高度
-                        children: [
-                          TextField(
-                              controller: inputTitleController,
-                              decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10.0),
-                                  labelText: 'title',
-                                  helperText: '请输入title',
-                                  prefixIcon: Icon(Icons.person))),
-                          TextField(
-                              controller: inputContentController,
-                              decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(10.0),
-                                  labelText: 'content',
-                                  helperText: '请输入content',
-                                  prefixIcon: Icon(Icons.person))),
-                        ]),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            var insertOneMemory = dbHelper.insertOneMemory(
-                                inputTitle, inputContent);
-                            insertOneMemory.then((value) {
-                              var memory = dbHelper.getMemory(value);
-                              return {
-                                print("插入成功"),
-                                print("memory $memory"),
-                                memory.then((value) =>
-                                {
-
-                                  Fluttertoast.showToast(
-                                      msg: "已加入记忆栈",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.CENTER,
-                                      backgroundColor: Colors.red,
-                                      textColor: Colors.white,
-                                      fontSize: 16.0
-                                  ),
-                                  // memoryState.setState(() {
-                                  //   print("set State $value");
-                                  //   list.add(value[0]);
-                                  // }),
-                                  Navigator.pop(context)
-                                })};
-                            });
-                            //     .catchError((){
-                            //   print("插入失败");
-                            // }
-                            // );
-                          },
-                          child: Text('确定')),
-                      TextButton(
-                          onPressed: () =>
-                          {
-                            Navigator.pop(context),
-                            memoryState.setState(() {})
-                          },
-                          child: Text('取消'))
-                    ],
-                  );
-                });
-          },
-        ),
-        body: new ListView.separated(
+    var listView = new ListView.separated(
             shrinkWrap: true,
             padding: const EdgeInsets.all(32.0),
             itemCount: list.length,
             //列表项构造器
             itemBuilder: (BuildContext context, int index) {
               // return ListTile(title: Text('$index'));
+              var memoryContentText = Text(list[index].content);
+
+              //markdown widget
+              var markdownWidget = Markdown(data: list[index].content);
+              // var markdownWidget = Markdown(data: "string start  ```code```  string end");
+
               return new GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   //点击范围约束，这样点击范围就是整个ListView的item，同时也不用设置背景
@@ -174,7 +101,7 @@ class _MyMemories extends State<MyHomePage> {
                         })
                       }
                     });
-                    
+
                     // showDialog(context: context, builder: (context) {
                     //   return AlertDialog(
                     //     title: Text("是否要修改"),
@@ -265,7 +192,7 @@ class _MyMemories extends State<MyHomePage> {
                                     var updateMemory = dbHelper.updateMemory(
                                         id, title, content);
                                     updateMemory.then((value) {
-                                      var memory = dbHelper.getMemory(1);
+                                      var memory = dbHelper.getMemory(id);
                                       return {
                                         print("update result $value"), //1为更新成功
                                         memory.then((value) =>
@@ -273,6 +200,7 @@ class _MyMemories extends State<MyHomePage> {
                                           memoryState.setState(() {
                                             // 更新成功后刷新页面
                                             if (value.length > 0) {
+
                                               list[index] = value[0];
                                             }
                                           }),
@@ -287,36 +215,132 @@ class _MyMemories extends State<MyHomePage> {
                           );
                         });
                   },
+                  // child: Container(
+                  //   height: 200,
+                  //   child: Markdown(
+                  //     data: "Mark down",
+                  //   ),
+                  // ),
                   child: Container(
+                      height: 230.0,
                       width: double.maxFinite,
                       // color: Colors.white,//限定最大宽度，且不设备背景，点击事件范围仅仅是有文字的区域
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(list[index].title,
-                              style: TextStyle(fontSize: 18)),
-                          Text(list[index].content)
+                          // IntrinsicHeight(
+                          //     child:Column(
+                              Column(
+                                children:[
+                                  Text(list[index].title,style: TextStyle(fontSize: 18)),
+                                  // memoryContentText,
+                                  // Expanded(
+                                  //     child: markdownWidget
+                                  Container(
+                                    height: 150,
+                                    child: markdownWidget,
+                                  )
+                                  // )
+                          ]
+                              // )
+
                           // Text(index.toString(), style: TextStyle(fontSize: 18)),
                           // Text(index.toString())
-                        ],
-                      )));
+                          )],
+                      ))
+              );
             },
             //分割器构造器
             separatorBuilder: (BuildContext context, int index) {
               return Divider(color: Colors.blue); //下划线
             }
           // itemExtent: 60,//可以控制高度
-        ));
+        );
+
+    return Scaffold(
+
+      //增加Scaffold后背景为白色，否则为黑
+        appBar: new AppBar(
+          title: new Text("memory"),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          backgroundColor: Colors.blue,
+          onPressed: () {
+            // dbHelper.insertOneMemory("insert title", "insert content");
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('add a memory'),
+                    content: Column(mainAxisSize: MainAxisSize.min, //自适应高度
+                        children: [
+                          TextField(
+                              controller: inputTitleController,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(10.0),
+                                  labelText: 'title',
+                                  helperText: '请输入title',
+                                  prefixIcon: Icon(Icons.person))),
+                          TextField(
+                              controller: inputContentController,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(10.0),
+                                  labelText: 'content',
+                                  helperText: '请输入content',
+                                  prefixIcon: Icon(Icons.person))),
+                        ]),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            var insertOneMemory = dbHelper.insertOneMemory(
+                                inputTitle, inputContent);
+                            insertOneMemory.then((value) {
+                              var memory = dbHelper.getMemory(value);
+                              return {
+                                print("插入成功"),
+                                print("memory $memory"),
+                                memory.then((value) =>
+                                {
+
+                                  Fluttertoast.showToast(
+                                      msg: "已加入记忆栈",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      backgroundColor: Colors.red,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0
+                                  ),
+                                  // memoryState.setState(() {
+                                  //   print("set State $value");
+                                  //   list.add(value[0]);
+                                  // }),
+                                  Navigator.pop(context)
+                                })};
+                            });
+                            //     .catchError((){
+                            //   print("插入失败");
+                            // }
+                            // );
+                          },
+                          child: Text('确定')),
+                      TextButton(
+                          onPressed: () =>
+                          {
+                            Navigator.pop(context),
+                            memoryState.setState(() {})
+                          },
+                          child: Text('取消'))
+                    ],
+                  );
+                });
+          },
+        ),
+        body:
+        listView
+        // Markdown(data: 'markdown data')
+    );
   }
 
-// @override
-// Future<void> setState(VoidCallback fn) async {//todo如何触发更新
-//   super.setState(fn);
-//   var memory = await getMemory();
-//   for(int i=0; i<memory.length; i++) {
-//     list.add(memory[i]);
-//     print(memory[i].toString());
-//   }
-// }
 }
