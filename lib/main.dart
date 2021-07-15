@@ -72,7 +72,7 @@ class _MyMemories extends State<MyHomePage> {
 
     var listView = new ListView.separated(
             shrinkWrap: true,
-            padding: const EdgeInsets.all(32.0),
+            padding: const EdgeInsets.all(16.0),
             itemCount: list.length,
             //列表项构造器
             itemBuilder: (BuildContext context, int index) {
@@ -80,8 +80,11 @@ class _MyMemories extends State<MyHomePage> {
               var memoryContentText = Text(list[index].content);
 
               //markdown widget
-              var markdownWidget = Markdown(data: list[index].content);
-              // var markdownWidget = Markdown(data: "string start  ```code```  string end");
+              // var markdownWidget = Markdown(data: list[index].content);
+              var markdownText = "扩展函数可以在已有类中添加新的方法，不会对原类进行修改，扩展函数定义形式\n\n```fun receiverType.functionName(params){    body  }```";
+              var markdownWidget = Markdown(
+                  data: markdownText,
+                  listItemCrossAxisAlignment: MarkdownListItemCrossAxisAlignment.start);
 
               return new GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -238,7 +241,8 @@ class _MyMemories extends State<MyHomePage> {
                                   // Expanded(
                                   //     child: markdownWidget
                                   Container(
-                                    height: 150,
+                                    height: 200,
+                                    color: Colors.lightBlueAccent,
                                     child: markdownWidget,
                                   )
                                   // )
