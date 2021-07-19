@@ -8,11 +8,17 @@ main() async {
   // runApp(new MemoryApp());
   runApp(new MaterialApp(title: "Memory App", home: new MemoryHome()));
 
-  await dbHelper.createDb();
+  // await dbHelper.createDb();
+  // dbHelper = await DbHelper.instance.then((value) => {
+  //   print("dbHelper " + dbHelper),
+  //   // refreshData()
+  // });
+  dbHelper = DbHelper();
+  await dbHelper.initializationDone;
   refreshData();
 }
 
-var dbHelper = DbHelper();
+var dbHelper;
 
 // var list = [];
 var list = <Memory>[];
