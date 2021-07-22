@@ -40,6 +40,8 @@ class _EditPageState extends State<EditPage> {
     print("edit refresh");
   }
 
+  var isCheck = true;
+
   @override
   Widget build(BuildContext context) {
     Widget divider = Divider(color: Colors.grey);
@@ -55,31 +57,36 @@ class _EditPageState extends State<EditPage> {
           // var markdownWidget = Markdown(data: _list[index].content);
           //这里使用MarkdownBody，可以自适应高度，否则Markdown必须指定高度
           // var markdownWidget = MarkdownBody(data: _list[index].content);
-          var markdownWidget = MarkdownBody(data:_list[index].content);
-          var memories = Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          var markdownWidget = MarkdownBody(data: _list[index].content);
+          var memories = Row(crossAxisAlignment: CrossAxisAlignment.start,
               // mainAxisSize: MainAxisSize.min,
               children: [
                 Checkbox(
-                    onChanged: (value) => {print("$index $value")},
-                    value: false),
-                Expanded(child: new Column(crossAxisAlignment:CrossAxisAlignment.start, children: [
-                  title,
-                  Container(
-                    // width: 100,
-                    // height: 100,
-                      padding: EdgeInsets.all(16.0),
-                      alignment: Alignment.centerLeft,
-                      color: Colors.lightBlueAccent,
-                      child: markdownWidget
-                  )
-                ]))
+                    onChanged: (value) => {
+                      print("$index $value"),
+                    this.isCheck = value!},
+                    value: isCheck),
+                Expanded(
+                    child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      title,
+                      Container(
+                          // width: 100,
+                          // height: 100,
+                          padding: EdgeInsets.all(16.0),
+                          alignment: Alignment.centerLeft,
+                          color: Colors.lightBlueAccent,
+                          child: markdownWidget)
+                    ]))
               ]);
           return memories;
         },
         separatorBuilder: (context, index) => divider,
         itemCount: _list.length);
 
-    return Scaffold(appBar: AppBar(title: Text('编辑')), body: ls);
+    return new Scaffold(appBar: AppBar(title: Text("edit page")), body: ls,);
   }
+
+
 }
