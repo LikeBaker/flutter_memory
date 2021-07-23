@@ -23,24 +23,25 @@ class _EditPageState extends State<EditPage> {
   }
 
   var _list = <Memory>[];
+  var checks;
 
   Future<void> refreshData() async {
     var memory = await dbHelper.getMemories();
     for (int i = 0; i < memory.length; i++) {
       var m = memory[i];
-      print(m.toString());
+      // print(m.toString());
       // if (isShow(m)) {
       //   list.add(m);
       // }
       _list.add(m);
     }
 
+    checks = List.filled(_list.length, false);
+
     setState(() {});
     // ignore: invalid_use_of_protected_member
     print("edit refresh");
   }
-
-  var isCheck = true;
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +64,12 @@ class _EditPageState extends State<EditPage> {
               children: [
                 Checkbox(
                     onChanged: (value) => {
-                      print("$index $value"),
-                    this.isCheck = value!},
-                    value: isCheck),
+                          print("$index $value"),
+                          checks[index] = value!,
+                          //需要再调用一下刷新，todo 是否可优化
+                          setState(() {})
+                        },
+                    value: checks[index]),
                 Expanded(
                     child: new Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,8 +89,21 @@ class _EditPageState extends State<EditPage> {
         separatorBuilder: (context, index) => divider,
         itemCount: _list.length);
 
-    return new Scaffold(appBar: AppBar(title: Text("edit page")), body: ls,);
+    void deleteMemories(){
+      print(checks);
+      // checks.
+      dbHelper.delMemories();
+    }
+
+    return new Scaffold(
+      appBar: AppBar(title: Text("edit page")),
+      body: Column(children: [Expanded(child: ls),
+        MaterialButton(minWidth:double.infinity, height:45, color:Colors.redAccent, textColor:Colors.white, child: Text("删除"),
+            disabledColor: Colors.grey,
+            onPressed: checks != null && checks.contains(true) ? deleteMemories : null),
+      ])
+    );
+
+
   }
-
-
 }

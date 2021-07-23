@@ -131,6 +131,15 @@ class DbHelper{
     future.then((value) => print("delete $value"));
   }
 
+  // 批量删除
+  // DELETE FROM TestTable WHERE FIELD_NAME IN (1, 2, 4, 8)
+  void delMemories() async{
+
+    final Database db = await _database;
+    Future<int> future = db.rawDelete('DELETE FROM memories WHERE id in (4,5)');
+    future.then((value) => print("delete $value"));
+  }
+
   Future<int> memoryCountIncrease(int id, int lastCount) async{
     final Database db = await _database;
     // db.rawUpdate('UPDATE memories SET $field = $value WHERE id = $id');

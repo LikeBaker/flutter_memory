@@ -28,7 +28,7 @@ Future<void> refreshData() async {
   var memory = await dbHelper.getMemories();
   for (int i = 0; i < memory.length; i++) {
     var m = memory[i];
-    print(m.toString());
+    // print(m.toString());
     // if (isShow(m)) {
     //   list.add(m);
     // }
