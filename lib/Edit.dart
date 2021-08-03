@@ -23,7 +23,7 @@ class _EditPageState extends State<EditPage> {
   }
 
   var _list = <Memory>[];
-  var checks;
+  var checks, delIds = List.empty(growable: true);
 
   Future<void> refreshData() async {
     var memory = await dbHelper.getMemories();
@@ -66,6 +66,11 @@ class _EditPageState extends State<EditPage> {
                     onChanged: (value) => {
                           print("$index $value"),
                           checks[index] = value!,
+                          if(value)
+                            delIds.add(_list[index].id)
+                          else {
+                            delIds.remove(_list[index].id)
+                          },
                           //需要再调用一下刷新，todo 是否可优化
                           setState(() {})
                         },
@@ -89,10 +94,26 @@ class _EditPageState extends State<EditPage> {
         separatorBuilder: (context, index) => divider,
         itemCount: _list.length);
 
+    //删除按钮的删除操作
     void deleteMemories(){
-      print(checks);
-      // checks.
-      dbHelper.delMemories();
+      print(delIds);
+      List _delIds = List.of(delIds);
+      var delMemories = dbHelper.delMemories(_delIds);
+
+      delMemories.then((value)=>{
+        setState(() {
+          // Iterator iterator = delIds.iterator;
+          // List _delMemories = List.empty(growable: true);
+          // while(iterator.moveNext()){
+          //   _delMemories.add(_delMemories);
+          // }
+
+          //貌似不放在setState中也能更新
+          _list.removeWhere((element) => delIds.contains(element.id));
+        }),
+
+        print("refresh state " + _list.length.toString())
+      });
     }
 
     return new Scaffold(

@@ -133,11 +133,26 @@ class DbHelper{
 
   // 批量删除
   // DELETE FROM TestTable WHERE FIELD_NAME IN (1, 2, 4, 8)
-  void delMemories() async{
+  Future<int> delMemories(List ids) async{
+    print("ids $ids");
+
+    var _delIdsStr = "(";
+    while(ids.isNotEmpty){
+      if(_delIdsStr.length == 1){
+        _delIdsStr = _delIdsStr + ids.removeLast().toString();
+      } else {
+        _delIdsStr = _delIdsStr + "," + ids.removeLast().toString();
+      }
+    }
+
+    _delIdsStr = _delIdsStr + ")";
+
+    print(_delIdsStr);
 
     final Database db = await _database;
-    Future<int> future = db.rawDelete('DELETE FROM memories WHERE id in (4,5)');
-    future.then((value) => print("delete $value"));
+    // Future<int> future = db.rawDelete('DELETE FROM memories WHERE id in $_delIdsStr');
+    // future.then((value) => print("delete $value"));
+    return db.rawDelete('DELETE FROM memories WHERE id in $_delIdsStr');
   }
 
   Future<int> memoryCountIncrease(int id, int lastCount) async{
