@@ -4,27 +4,18 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_memory/Edit.dart';
 
-import 'data/MemoryData.dart';
-
-/// todo 卡片布局，卡片可以切换
-// main() async {
-main() {
-  // runApp(new MemoryHome());
-  runApp(new MaterialApp(title: "Memory App", home: new MemoryHome()));
-  // runApp(new WidgetsApp(title: "Memory App", home: new MemoryHome()));
+main() async {
+  // runApp(new MemoryApp());
+  runApp(new MaterialApp(title: "Memory App", home: new SummaryList()));
 
   // await dbHelper.createDb();
   // dbHelper = await DbHelper.instance.then((value) => {
   //   print("dbHelper " + dbHelper),
   //   // refreshData()
   // });
-  // dbHelper = DbHelper();
-  // await dbHelper.initializationDone;
+  dbHelper = DbHelper();
+  await dbHelper.initializationDone;
   refreshData();
-
-  // getMemories().then((value) => {
-  //   print(value.toString())
-  // });
 }
 
 var dbHelper;
@@ -34,35 +25,25 @@ var list = <Memory>[];
 var memoryState = new _MyMemories();
 
 Future<void> refreshData() async {
-  // var memory = await dbHelper.getMemories();
-  // var memoryData = MemoryData();
-  // memoryData.getMemories();
-  var memory = await getMemories();
+  var memory = await dbHelper.getMemories();
   for (int i = 0; i < memory.length; i++) {
     var m = memory[i];
-    print(m.toString());
-    list.add(m);
+    // print(m.toString());
     // if (isShow(m)) {
     //   list.add(m);
     // }
+    list.add(m);
   }
 
   // ignore: invalid_use_of_protected_member
   memoryState.setState(() {});
 }
 
-class MemoryHome extends StatelessWidget {
+class SummaryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // var deviceData = MediaQuery.of(context);
-    // print(deviceData.orientation);//屏幕方向
-    // print(deviceData.textScaleFactor);
-    // print(deviceData.padding);
-    // print(deviceData.disableAnimations);//设备是否要求限制动画
-    // print(deviceData.platformBrightness);//屏幕对比度级别
-    // var _data = deviceData.toString();
-    // print("deviceData $_data");
+    init();
 
     return new Scaffold(
       appBar: new AppBar(title: new Text('The Memories'), actions: <Widget>[
@@ -72,60 +53,12 @@ class MemoryHome extends StatelessWidget {
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => EditPage()),
         )),
       ]),
-      // body: new MyHomePage(),
-      body: new MemoryCard(),
+      body: new MyHomePage(),
     );
   }
-}
 
-var title = "Dart中的final与const";
-var content = "final:用来修饰变量，且只能在运行时被赋值一次，"
-    "运行时即当程序执行到时才会赋值(Dart2的智能分析流程可以不直接赋值)。\n\n"
-    "\n\n```\n"//表示一组代码块
-    //```后面必须又要给换行，不然内容显示不全，
-    "final String title;//error:未初始化\n"
-    "title = \"页面\";//error:不能给final修饰的变量赋值\n"
-    "```\n\n"//表示一组代码块
-    "const：修饰变量、常量构造函数，只能被赋值一次。被const修饰的变量在应用"
-    "整个生命周期内都是不可变的，在内存中只会创建一次，之后的每次调用都会复用"
-    "这个对象。";
+  void init() {
 
-var titleStyle = TextStyle(fontSize:18, color: Colors.black);
-var contentStyle = TextStyle(fontSize:14, color: Colors.black);
-
-class MemoryCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    const sizedBoxWid = const SizedBox(width: 8);
-    const sizedBoxHei = const SizedBox(height: 8);
-    return Center(
-      child: Card(
-        margin: EdgeInsets.all(16),
-        child: Padding(
-          padding: EdgeInsets.only(left: 16, right: 16, top: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,//不加默认占满屏幕
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: titleStyle),
-              sizedBoxHei,
-              // Text(content, style: contentStyle),
-              //todo 使用Markdown，必须设置一个高度，如何让高度自适应，或者固定一个与窗口高度固定比例的高度
-              Container(height: 300, child:Markdown(data: content)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(onPressed: (){print("Get It click");}, child: const Text("Get It！")),
-                  sizedBoxWid,
-                  TextButton(onPressed: (){print("next click");}, child: const Text("next")),
-                  sizedBoxWid
-                ],
-              )
-            ],
-          ),
-        ),
-      )
-    );
   }
 }
 

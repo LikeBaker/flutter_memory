@@ -110,6 +110,7 @@ class _EditPageState extends State<EditPage> {
 
           //貌似不放在setState中也能更新
           _list.removeWhere((element) => delIds.contains(element.id));
+          delIds.length = 0;//清空delIds
         }),
 
         print("refresh state " + _list.length.toString())
